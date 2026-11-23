@@ -382,14 +382,61 @@ a.tile{text-decoration:none}
 .gtip{border-left:2px solid var(--ink-soft);padding:2px 0 2px 10px;font-size:11.5px;color:var(--muted);margin:12px 0;line-height:1.7}
 .gmini{display:block;width:100%;text-align:left;background:none;border:0;color:var(--muted);font-size:11px;padding:0;margin:-2px 0 9px;text-decoration:underline;text-underline-offset:3px}
 .helprow b{flex:0 0 64px;font-weight:600;font-size:11.5px;color:var(--fg)}
+
+.ovsheet{position:fixed;inset:0;z-index:120;background:var(--bg);display:none;flex-direction:column}
+.ovsheet.show{display:flex}
+.ovhead{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.ovtitle{flex:1;font-size:14px;font-weight:600;text-align:center}
+.ovclose,.ovredo{background:none;border:0;font-size:12px;color:var(--muted);padding:4px 2px}
+.ovredo{color:var(--fg)}
+.ovbody{flex:1;overflow-y:auto;padding:18px 18px 10px;-webkit-overflow-scrolling:touch}
+.ovload{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:60px 10px}
+.ovspin{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--fg);animation:ovspin .9s linear infinite}
+@keyframes ovspin{to{transform:rotate(360deg)}}
+.ovstep{font-size:13px;font-weight:600}
+.ovsub{font-size:11.5px;color:var(--muted);text-align:center;line-height:1.7}
+.ovdoc{font-size:14px;line-height:1.85;display:none}
+.ovdoc.on{display:block}
+.ovdoc h1{font-size:19px;margin:0 0 6px;line-height:1.45}
+.ovdoc h2{font-size:15.5px;margin:22px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.ovdoc h3{font-size:13.5px;margin:16px 0 6px}
+.ovdoc p{margin:8px 0}
+.ovdoc ul,.ovdoc ol{margin:8px 0;padding-left:20px}
+.ovdoc li{margin:4px 0}
+.ovdoc blockquote{margin:10px 0;padding:6px 12px;border-left:2px solid var(--line);color:var(--muted)}
+.ovdoc .meta{font-size:11.5px;color:var(--muted);margin-bottom:14px}
+.ovfoot{border-top:1px solid var(--line);padding:12px 14px calc(14px + env(safe-area-inset-bottom))}
+.ovformats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ovfmt{background:transparent;border:1px solid var(--line);border-radius:12px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.ovfmt b{font-size:12px;font-weight:600}
+.ovfmt span{font-size:10px;color:var(--muted)}
+.ovfmt:disabled{opacity:.35}
+.ovedit{display:none;width:100%;min-height:60vh;border:0;outline:0;background:transparent;color:var(--fg);font-family:var(--mono,ui-monospace,Menlo,Consolas,monospace);font-size:13px;line-height:1.8;resize:none;padding:0 0 20px}
+.ovedit.on{display:block}
+.ovhint{font-size:10.5px;color:var(--muted);text-align:center;margin-top:9px}
 #printRoot{display:none}
 @media print{
+  @page{size:A4;margin:0}
+  .pdfpage{width:210mm;height:297mm;padding:16mm 15mm 18mm;box-sizing:border-box;background:#fff;page-break-after:always;break-after:page;overflow:hidden}
+  .pdfpage:last-child{page-break-after:auto;break-after:auto}
+  .pdfpage h1{font-size:18pt;margin:0 0 6px;text-align:center}
+  .pdfpage h2{font-size:13.5pt;margin:14pt 0 6pt}
+  .pdfpage h3{font-size:11.5pt;margin:10pt 0 4pt}
+  .pdfpage p{margin:5pt 0}
+  .pdfpage ul,.pdfpage ol{margin:5pt 0;padding-left:16pt}
+  .pdfpage li{margin:2pt 0}
+  .pdfpage .meta{font-size:9pt;color:#555;margin-bottom:18pt;text-align:center}
   html,body{position:static!important;overflow:visible!important;height:auto!important;background:#fff!important;color:#000!important}
-  .app,.bg,.drawer,.sheet,.mask,.toast,.install,#boot{display:none!important}
-  #printRoot{display:block!important;max-width:760px;margin:0 auto;padding:20px;font-size:12pt;line-height:1.7}
+  .app,.bg,.drawer,.sheet,.ovsheet,.mask,.toast,.install,#boot{display:none!important}
+  #printRoot{display:block!important;max-width:100%!important;margin:0!important;padding:0!important;font-size:11.5pt;line-height:1.75;color:#000!important}
   #printRoot h1{font-size:16pt;margin:0 0 14px}
   #printRoot h2{font-size:14pt}
   #printRoot h3{font-size:13pt}
+  #printRoot h2{break-after:avoid;page-break-after:avoid;margin-top:18pt}
+  #printRoot h3{break-after:avoid;page-break-after:avoid;margin-top:12pt}
+  #printRoot li{break-inside:avoid;page-break-inside:avoid}
+  #printRoot p{orphans:3;widows:3}
+  #printRoot .meta{color:#555!important}
   #printRoot pre{white-space:pre-wrap;word-break:break-word;border:1px solid #ddd;padding:8px;background:#fafafa}
   #printRoot code{background:#f4f4f4}
   #printRoot table{border-collapse:collapse;width:100%}
@@ -576,6 +623,12 @@ a.tile{text-decoration:none}
     <div style="font-size:10px;color:var(--muted);margin-top:6px;line-height:1.6" data-i18n="importHelp">支持本应用备份 JSON、DeepSeek 客户端导出的整包 zip，或解压出来的 chat_sessions/*.json（可多选）</div>
   </div>
   <div class="field">
+    <div class="mswitch" style="margin-bottom:0">
+      <span><b data-i18n="nativeMode">一键原生</b><em data-i18n="nativeModeDesc">只发送对话与记忆，不加本项目写的任何系统提示词，接近官方客户端</em></span>
+      <label class="switch"><input type="checkbox" id="nativeOn"><i></i></label>
+    </div>
+  </div>
+  <div class="field">
     <label data-i18n="language">语言</label>
     <div class="row"><button class="mini" id="btnLangZh" style="flex:1">中文</button><button class="mini" id="btnLangEn" style="flex:1">English</button></div>
   </div>
@@ -586,6 +639,33 @@ a.tile{text-decoration:none}
   </div>
   <div class="field" style="color:var(--muted);font-size:12px;line-height:1.7" data-i18n="note">联网搜索、阅读链接、深度思考都由 DeepSeek 官方接口完成，不需要别的 Key。Key 和对话只存在本机浏览器，不经过任何第三方服务器。</div>
   <div class="sheetfoot"><button class="primary" id="btnSave" data-i18n="save">保存</button></div>
+</div>
+
+<div class="ovsheet" id="ovSheet">
+  <div class="ovhead">
+    <button class="ovclose" id="ovClose">关闭</button>
+    <div class="ovtitle" id="ovTitle">对话概览</div>
+    <button class="ovredo" id="ovEditBtn">编辑</button>
+    <button class="ovredo" id="ovRedo">重新生成</button>
+  </div>
+  <div class="ovbody">
+    <div class="ovload" id="ovLoad">
+      <div class="ovspin"></div>
+      <div class="ovstep" id="ovStep">正在整理上下文</div>
+      <div class="ovsub" id="ovSub"></div>
+    </div>
+    <div class="ovdoc" id="ovDoc"></div>
+    <textarea class="ovedit" id="ovEdit" spellcheck="false"></textarea>
+  </div>
+  <div class="ovfoot">
+    <div class="ovformats" id="ovFormats">
+      <button class="ovfmt" data-f="md"><b>Markdown</b><span>.md</span></button>
+      <button class="ovfmt" data-f="txt"><b>TXT</b><span>.txt</span></button>
+      <button class="ovfmt" data-f="docx"><b>Word</b><span>.docx</span></button>
+      <button class="ovfmt" data-f="pdf"><b>PDF</b><span>打印</span></button>
+    </div>
+    <div class="ovhint" id="ovHint">生成完选一个格式，文件保存到手机</div>
+  </div>
 </div>
 
 <div class="sheet" id="modelSheet">
@@ -877,7 +957,7 @@ zh:{
   greetSub:'今天想聊点什么',userName:'朋友',chatsEmpty:'还没有对话',
   gToday:'今天',gYesterday:'昨天',gWeek:'7 天内',gEarlier:'更早',
   metaIn:'输入',metaHit:'缓存命中',metaOut:'输出',metaThink:'思考',thisChat:'本对话',
-  loading:'加载中…',forceUpdate:'刷新到最新版',forceAsk:'会清掉界面缓存并重新加载，需要 dsh-go 正在运行，否则会打不开。对话和 Key 不会丢。',optCamera:'拍照',optGallery:'相册',optFile:'文件',uploading:'处理中',uploadFail:'文件处理失败',tooBig:'文件超过 30MB',unsupported:'这个格式暂时不支持',waitUpload:'文件还在处理中',fileAsk:'看看这个文件',exportTitle:'导出这条回答',exportTxt:'纯文本',exported:'已导出',exportShare:'导出',exportHint:'Markdown 保留格式；纯文本去掉标记；PDF 走系统打印，在弹出的面板里选「另存为 PDF」。',pin:'置顶',usage:'用量',uToday:'今日',uMonth:'本月',uTotal:'总计',uBal:'余额',uExport:'导出 CSV',usageNote:'总计为本机累计，删会话、换版本、清缓存都不会清零；金额按接口返回的用量估算，以官方账单为准。',uEmpty:'还没有可统计的记录',uiScale:'界面缩放',cont:'继续',provider:'服务商',custom:'自定义',baseUrl:'接口地址',modelName:'模型名',providerKey:'该服务商 Key（留空用上面那把）',storage:'存储',storageText:'文本数据',chatsUnit:' 个会话',storageImg:'图片缓存',storageFiles:'张图片',clearImg:'清理图片缓存',cleared:'已清理',loadMore:'加载更早的消息',saveImg:'保存图片',importTitle:'导入对话',importZip:'这是压缩包，请先解压再选择里面的 json 文件',importZipOld:'当前浏览器版本太旧，无法直接解压，请先解压后再选 JSON',importZipBad:'这个压缩包里没有找到 chat_sessions 会话文件',importZipAsk:'压缩包里有 %s 个会话，解压后约 %s MB。会全部导入，占用的本机空间也是这个量级，导入过程中不要锁屏。继续吗？',importZipBusy:'正在导入 %s / %s',importZipDone:'导入完成：新增 %s，跳过或失败 %s',pasteAdd:'已粘贴 %s 张图片',mmdFail:'这段图表代码 mermaid 解析不了，已按原样显示',mmdRetry:'重新渲染',mmdDrawing:'正在重新绘制…',updLatest:'已是最新版本',updFail:'检查更新失败，请检查网络',updAsk:'发现新版本 %s，当前 %s。立即刷新？',updRefreshing:'正在更新…',importZipRest:'，其余因本地空间不足未导入',importDone:'导入完成：新增 ',importSkip:'，跳过 ',importHelp:'支持本应用备份 JSON，或 DeepSeek 客户端导出的 chat_sessions/*.json（可多选）',deleted:'已删除',backup:'导出备份',restore:'导入备份',restoreAsk:'导入会覆盖当前全部对话与设置，确定继续？',restored:'已恢复',backupDone:'备份已导出',backupFail:'备份文件解析失败',searchPh:'搜索对话',noResult:'没有匹配的对话',updating:'正在刷新缓存…',updatedTo:'已更新到 ',unpin:'取消置顶',lock:'锁定',unlock:'取消锁定',delChat:'删除对话',protectedHint:'置顶或锁定的对话不能删除',tagPin:'置顶',tagLock:'锁定',ctx:'上下文',sources:'参考来源',memSaved:'已存入记忆：',thinking:'正在深度思考…',thinkTitle:'推理强度',thinkOff:'关闭',thinkOffDesc:'直接回答，最快，适合闲聊和查资料',thinkLow:'低',thinkLowDesc:'简单推理，几秒出结果，最省 token',thinkHigh:'高',thinkHighDesc:'官方默认档，多数问题够用',thinkMax:'最高',thinkMaxDesc:'复杂推导、写代码、算题，更慢但更完整',incogTitle:'匿名对话',incogSub:'关闭即消失',incogOn:'已进入匿名对话，退出后不会保留',incogExitAsk:'这段对话不会保留，确定退出？',incogGone:'匿名对话已清空',incogHint:'本对话不保存、不进历史、不写入记忆；会读取你的个性化与长期记忆。退出后无法找回',roleTitle:'角色',roleNew:'新建角色',roleEdit:'编辑角色',roleNone:'不使用角色',roleNoneDesc:'按默认方式回答，不附加任何设定',roleEmpty:'还没有角色。新建一个，写上你希望它扮演的身份与规则，保存后就能给任意对话使用。',roleNameLabel:'名称',roleNamePh:'例如：Java 面试官',rolePromptLabel:'提示词',rolePromptPh:'你是一名大厂技术面试官，一次只问一个问题……',roleTip:'这段文字会加入系统提示词，每次对话都会发送，写得越长费用越高。',roleNote:'角色只作用于当前对话，随时可以切换或关闭。',roleSaved:'角色已保存',roleOn:'已启用角色：',roleOff:'已关闭角色',roleNeedName:'给角色起个名字',roleNeedPrompt:'提示词不能为空',roleDelAsk:'删除这个角色？用过它的对话会变回默认。',thinkNote:'官方只有低、高、最高三档，默认高。越高推理 token 越多，费用越高；改完对下一条消息生效。',thought:'已深度思考',
+  loading:'加载中…',forceUpdate:'刷新到最新版',forceAsk:'会清掉界面缓存并重新加载，需要 dsh-go 正在运行，否则会打不开。对话和 Key 不会丢。',optCamera:'拍照',optGallery:'相册',optFile:'文件',uploading:'处理中',uploadFail:'文件处理失败',tooBig:'文件超过 30MB',unsupported:'这个格式暂时不支持',waitUpload:'文件还在处理中',fileAsk:'看看这个文件',exportTitle:'导出这条回答',exportTxt:'纯文本',exported:'已导出',exportShare:'导出',exportHint:'Markdown 保留格式；纯文本去掉标记；PDF 走系统打印，在弹出的面板里选「另存为 PDF」。',pin:'置顶',usage:'用量',uToday:'今日',uMonth:'本月',uTotal:'总计',uBal:'余额',uExport:'导出 CSV',usageNote:'总计为本机累计，删会话、换版本、清缓存都不会清零；金额按接口返回的用量估算，以官方账单为准。',uEmpty:'还没有可统计的记录',uiScale:'界面缩放',cont:'继续',provider:'服务商',custom:'自定义',baseUrl:'接口地址',modelName:'模型名',providerKey:'该服务商 Key（留空用上面那把）',storage:'存储',storageText:'文本数据',chatsUnit:' 个会话',storageImg:'图片缓存',storageFiles:'张图片',clearImg:'清理图片缓存',cleared:'已清理',loadMore:'加载更早的消息',saveImg:'保存图片',importTitle:'导入对话',importZip:'这是压缩包，请先解压再选择里面的 json 文件',importZipOld:'当前浏览器版本太旧，无法直接解压，请先解压后再选 JSON',importZipBad:'这个压缩包里没有找到 chat_sessions 会话文件',importZipAsk:'压缩包里有 %s 个会话，解压后约 %s MB。会全部导入，占用的本机空间也是这个量级，导入过程中不要锁屏。继续吗？',importZipBusy:'正在导入 %s / %s',importZipDone:'导入完成：新增 %s，跳过或失败 %s',pasteAdd:'已粘贴 %s 张图片',mmdFail:'这段图表代码 mermaid 解析不了，已按原样显示',mmdRetry:'重新渲染',mmdDrawing:'正在重新绘制…',updLatest:'已是最新版本',updFail:'检查更新失败，请检查网络',updAsk:'发现新版本 %s，当前 %s。立即刷新？',updRefreshing:'正在更新…',importZipRest:'，其余因本地空间不足未导入',importDone:'导入完成：新增 ',importSkip:'，跳过 ',importHelp:'支持本应用备份 JSON，或 DeepSeek 客户端导出的 chat_sessions/*.json（可多选）',deleted:'已删除',backup:'导出备份',restore:'导入备份',restoreAsk:'导入会覆盖当前全部对话与设置，确定继续？',restored:'已恢复',backupDone:'备份已导出',backupFail:'备份文件解析失败',searchPh:'搜索对话',noResult:'没有匹配的对话',updating:'正在刷新缓存…',updatedTo:'已更新到 ',unpin:'取消置顶',lock:'锁定',unlock:'取消锁定',delChat:'删除对话',protectedHint:'置顶或锁定的对话不能删除',tagPin:'置顶',tagLock:'锁定',ctx:'上下文',sources:'参考来源',memSaved:'已存入记忆：',thinking:'正在深度思考…',thinkTitle:'推理强度',thinkOff:'关闭',thinkOffDesc:'直接回答，最快，适合闲聊和查资料',thinkLow:'低',thinkLowDesc:'简单推理，几秒出结果，最省 token',thinkHigh:'高',thinkHighDesc:'官方默认档，多数问题够用',thinkMax:'最高',thinkMaxDesc:'复杂推导、写代码、算题，更慢但更完整',incogTitle:'匿名对话',incogSub:'关闭即消失',incogOn:'已进入匿名对话，退出后不会保留',incogExitAsk:'这段对话不会保留，确定退出？',incogGone:'匿名对话已清空',incogHint:'本对话不保存、不进历史、不写入记忆；会读取你的个性化与长期记忆。退出后无法找回',ovTook:'用时 ',ovCacheHit:'命中',ovSub:'共 %s 字，本次生成按 token 计费',ovStep1:'正在整理上下文',ovStep2:'正在提炼要点',ovStep3:'正在排版',ovHintLoading:'生成中，请稍候',ovHintReady:'选一个格式，保存到手机',ovEmpty:'没有生成内容，请重试',ovFailed:'生成失败，可点右上角重新生成',ovNoMsgs:'这段对话还没有内容',ovMsgUnit:' 条消息',ovSysPrompt:'你是一位资深的技术会议记录整理者，只做归纳，不新增事实、不做评价、不补充对话里没有的信息。任务是把对话整理成一份可以直接归档的中文概览。\n\n严格按下面的结构输出，使用 Markdown：\n# 对话概览：<一句话主题，12 字以内>\n## 一、背景与目标\n## 二、核心结论\n## 三、分点要点\n## 四、关键数据与定义\n## 五、待办与后续\n## 六、附注\n\n写作规则：\n1. 每个二级标题下的内容用无序列表或有序列表，二级标题必须带中文序号，缺内容的章节整节省略，不要写“暂无”。\n2. 核心结论给 3 到 6 条，每条一句话，不超过 40 字，直接写结论，不写推导过程。\n3. 分点要点按主题拆成 2 到 5 组，每组用 ### 三级标题（写主题名，不带序号），组内 2 到 5 条。\n4. 关键数据与定义只收录对话中出现过的数字、版本号、参数、命令、术语，没有就省略本节。\n5. 待办与后续写明确的下一步动作，以动词开头；没有就省略本节。\n6. 全篇使用陈述句，禁止出现“用户说”“助手回答”“我”“你”这类第一二人称。\n7. 不要复述对话原文，不要出现“总之”“综上”“以上就是”“希望对你有所帮助”这类套话。\n8. 专有名词、代码标识符、版本号保持原样，不要翻译或改写。\n9. 全篇控制在 400 到 900 字，宁可少写也不要为凑字数重复。',ovUserPrompt:'下面是这段对话的完整内容（共 %s 条消息）。请按规则输出概览文档，从一级标题开始，直接输出正文，不要任何前言、解释或结语。\n\n',ovEditBtn:'编辑',ovPreview:'预览',ovMenu:'导出概览',nativeMode:'一键原生',nativeModeDesc:'只发送对话与记忆，不加项目内任何系统提示词，接近官方客户端',nativeOnTip:'已切到原生模式，下一条生效',nativeOffTip:'已恢复增强模式',nativeRoleTip:'一键原生已开启，角色不生效',roleTitle:'角色',roleNew:'新建角色',roleEdit:'编辑角色',roleNone:'不使用角色',roleNoneDesc:'按默认方式回答，不附加任何设定',roleEmpty:'还没有角色。新建一个，写上你希望它扮演的身份与规则，保存后就能给任意对话使用。',roleNameLabel:'名称',roleNamePh:'例如：Java 面试官',rolePromptLabel:'提示词',rolePromptPh:'你是一名大厂技术面试官，一次只问一个问题……',roleTip:'这段文字会加入系统提示词，每次对话都会发送，写得越长费用越高。',roleNote:'角色只作用于当前对话，随时可以切换或关闭。',roleSaved:'角色已保存',roleOn:'已启用角色：',roleOff:'已关闭角色',roleNeedName:'给角色起个名字',roleNeedPrompt:'提示词不能为空',roleDelAsk:'删除这个角色？用过它的对话会变回默认。',thinkNote:'官方只有低、高、最高三档，默认高。越高推理 token 越多，费用越高；改完对下一条消息生效。',thought:'已深度思考',
   searchNow:'正在联网搜索：',openNow:'正在打开网页：',findNow:'正在网页内查找：',readNow:'正在阅读链接：',toolNow:'正在调用联网能力…',
   stopped:'（已停止）',netErr:'网络错误，请重试',reqFail:'请求失败（',keyBad:'API Key 无效或已过期',noBalance:'账户余额不足',
   tooOften:'请求太频繁或并发超限，稍后再试',genFail:'生成失败',
@@ -920,7 +1000,7 @@ en:{
   greetSub:"What's on your mind",userName:'Suxiangyu',chatsEmpty:'No chats yet',
   gToday:'Today',gYesterday:'Yesterday',gWeek:'Previous 7 days',gEarlier:'Earlier',
   metaIn:'In',metaHit:'cached',metaOut:'Out',metaThink:'Thinking',thisChat:'This chat',
-  loading:'Loading…',forceUpdate:'Reload latest version',forceAsk:'Clears the UI cache and reloads. dsh-go must be running or the page will fail. Chats and keys are kept.',optCamera:'Camera',optGallery:'Photos',optFile:'File',uploading:'Processing',uploadFail:'Upload failed',tooBig:'File is over 30MB',unsupported:'Unsupported format',waitUpload:'File is still processing',fileAsk:'Check this file',exportTitle:'Export this answer',exportTxt:'Plain text',exported:'Exported',exportShare:'Export',exportHint:'Markdown keeps formatting; plain text strips markers; PDF uses the system print dialog and pick Save as PDF.',pin:'Pin',usage:'Usage',uToday:'Today',uMonth:'Month',uTotal:'All time',uBal:'Balance',uExport:'Export CSV',usageNote:'The all-time total is kept on this device and never resets when chats are deleted. Amounts are estimated from returned usage; the official bill prevails.',uEmpty:'No usage recorded yet',uiScale:'UI scale',cont:'Continue',provider:'Provider',custom:'Custom',baseUrl:'Base URL',modelName:'Model',providerKey:'Provider key (blank = above)',storage:'Storage',storageText:'Text data',chatsUnit:' chats',storageImg:'Image cache',storageFiles:' images',clearImg:'Clear image cache',cleared:'Cleared',loadMore:'Load earlier messages',saveImg:'Save image',importTitle:'Imported chat',importZip:'That is a zip file. Unzip it and pick the json files inside.',importZipOld:'This browser cannot unzip. Please unzip and pick the JSON files.',importZipBad:'No chat_sessions JSON found in this zip',importZipAsk:'This zip has %s sessions, about %s MB unpacked. All of them will be imported and take the same amount of local space. Keep the screen on during import. Continue?',importZipBusy:'Importing %s / %s',importZipDone:'Imported %s, skipped or failed %s',pasteAdd:'Pasted %s image(s)',mmdFail:'Mermaid could not parse this diagram, showing the source',mmdRetry:'Render again',mmdDrawing:'Redrawing…',updLatest:'Already up to date',updFail:'Update check failed, check your network',updAsk:'New version %s found, current %s. Refresh now?',updRefreshing:'Updating…',importZipRest:', the rest skipped for lack of space',importDone:'Imported: ',importSkip:', skipped ',importHelp:'Supports this app backup JSON, or chat_sessions/*.json exported from DeepSeek (multi-select)',deleted:'Deleted',backup:'Export backup',restore:'Import backup',restoreAsk:'Importing replaces all chats and settings. Continue?',restored:'Restored',backupDone:'Backup exported',backupFail:'Invalid backup file',searchPh:'Search chats',noResult:'No matching chats',updating:'Clearing cache…',updatedTo:'Updated to ',unpin:'Unpin',lock:'Lock',unlock:'Unlock',delChat:'Delete chat',protectedHint:'Pinned or locked chats cannot be deleted',tagPin:'Pinned',tagLock:'Locked',ctx:'Context',sources:'Sources',memSaved:'Saved to memory: ',thinking:'Thinking…',thinkTitle:'Reasoning effort',thinkOff:'Off',thinkOffDesc:'Answer directly, fastest for chat and lookups',thinkLow:'Low',thinkLowDesc:'Light reasoning, cheapest',thinkHigh:'High',thinkHighDesc:'API default, enough for most questions',thinkMax:'Max',thinkMaxDesc:'Hard derivations, code, math. Slower but more complete',incogTitle:'Incognito',incogSub:'gone when closed',incogOn:'Incognito on. Nothing is kept after you leave.',incogExitAsk:'This chat will not be kept. Leave?',incogGone:'Incognito chat cleared',incogHint:'Not saved, not listed, and nothing new is written to memory. Your persona and saved memories are still used. Gone once you leave.',roleTitle:'Role',roleNew:'New role',roleEdit:'Edit role',roleNone:'No role',roleNoneDesc:'Answer in the default style',roleEmpty:'No roles yet. Create one with the persona and rules you want, then use it in any chat.',roleNameLabel:'Name',roleNamePh:'e.g. Java interviewer',rolePromptLabel:'Prompt',rolePromptPh:'You are a big-tech interviewer. Ask one question at a time…',roleTip:'This text is added to the system prompt on every request, so longer prompts cost more.',roleNote:'A role applies to this chat only and can be changed any time.',roleSaved:'Role saved',roleOn:'Role on: ',roleOff:'Role off',roleNeedName:'Give the role a name',roleNeedPrompt:'Prompt cannot be empty',roleDelAsk:'Delete this role? Chats using it fall back to default.',thinkNote:'The API offers low, high and max only, defaulting to high. Higher effort costs more. Applies to the next message.',thought:'Thought',
+  loading:'Loading…',forceUpdate:'Reload latest version',forceAsk:'Clears the UI cache and reloads. dsh-go must be running or the page will fail. Chats and keys are kept.',optCamera:'Camera',optGallery:'Photos',optFile:'File',uploading:'Processing',uploadFail:'Upload failed',tooBig:'File is over 30MB',unsupported:'Unsupported format',waitUpload:'File is still processing',fileAsk:'Check this file',exportTitle:'Export this answer',exportTxt:'Plain text',exported:'Exported',exportShare:'Export',exportHint:'Markdown keeps formatting; plain text strips markers; PDF uses the system print dialog and pick Save as PDF.',pin:'Pin',usage:'Usage',uToday:'Today',uMonth:'Month',uTotal:'All time',uBal:'Balance',uExport:'Export CSV',usageNote:'The all-time total is kept on this device and never resets when chats are deleted. Amounts are estimated from returned usage; the official bill prevails.',uEmpty:'No usage recorded yet',uiScale:'UI scale',cont:'Continue',provider:'Provider',custom:'Custom',baseUrl:'Base URL',modelName:'Model',providerKey:'Provider key (blank = above)',storage:'Storage',storageText:'Text data',chatsUnit:' chats',storageImg:'Image cache',storageFiles:' images',clearImg:'Clear image cache',cleared:'Cleared',loadMore:'Load earlier messages',saveImg:'Save image',importTitle:'Imported chat',importZip:'That is a zip file. Unzip it and pick the json files inside.',importZipOld:'This browser cannot unzip. Please unzip and pick the JSON files.',importZipBad:'No chat_sessions JSON found in this zip',importZipAsk:'This zip has %s sessions, about %s MB unpacked. All of them will be imported and take the same amount of local space. Keep the screen on during import. Continue?',importZipBusy:'Importing %s / %s',importZipDone:'Imported %s, skipped or failed %s',pasteAdd:'Pasted %s image(s)',mmdFail:'Mermaid could not parse this diagram, showing the source',mmdRetry:'Render again',mmdDrawing:'Redrawing…',updLatest:'Already up to date',updFail:'Update check failed, check your network',updAsk:'New version %s found, current %s. Refresh now?',updRefreshing:'Updating…',importZipRest:', the rest skipped for lack of space',importDone:'Imported: ',importSkip:', skipped ',importHelp:'Supports this app backup JSON, or chat_sessions/*.json exported from DeepSeek (multi-select)',deleted:'Deleted',backup:'Export backup',restore:'Import backup',restoreAsk:'Importing replaces all chats and settings. Continue?',restored:'Restored',backupDone:'Backup exported',backupFail:'Invalid backup file',searchPh:'Search chats',noResult:'No matching chats',updating:'Clearing cache…',updatedTo:'Updated to ',unpin:'Unpin',lock:'Lock',unlock:'Unlock',delChat:'Delete chat',protectedHint:'Pinned or locked chats cannot be deleted',tagPin:'Pinned',tagLock:'Locked',ctx:'Context',sources:'Sources',memSaved:'Saved to memory: ',thinking:'Thinking…',thinkTitle:'Reasoning effort',thinkOff:'Off',thinkOffDesc:'Answer directly, fastest for chat and lookups',thinkLow:'Low',thinkLowDesc:'Light reasoning, cheapest',thinkHigh:'High',thinkHighDesc:'API default, enough for most questions',thinkMax:'Max',thinkMaxDesc:'Hard derivations, code, math. Slower but more complete',incogTitle:'Incognito',incogSub:'gone when closed',incogOn:'Incognito on. Nothing is kept after you leave.',incogExitAsk:'This chat will not be kept. Leave?',incogGone:'Incognito chat cleared',incogHint:'Not saved, not listed, and nothing new is written to memory. Your persona and saved memories are still used. Gone once you leave.',ovTook:'took ',ovCacheHit:'cached',ovSub:'%s characters; this generation is billed by tokens',ovStep1:'Reading the conversation',ovStep2:'Condensing the key points',ovStep3:'Typesetting',ovHintLoading:'Generating, please wait',ovHintReady:'Pick a format to save to your phone',ovEmpty:'Nothing generated, try again',ovFailed:'Generation failed, tap retry at the top right',ovNoMsgs:'This conversation is empty',ovMsgUnit:' messages',ovSysPrompt:'You are a senior technical meeting-minutes editor. Summarise only; never add facts, opinions or details absent from the conversation. Produce a finished English overview that can be filed as-is.\n\nFollow this structure exactly in Markdown:\n# Conversation overview: <topic, max 8 words>\n## 1. Background and goal\n## 2. Key conclusions\n## 3. Detailed points\n## 4. Numbers and definitions\n## 5. Next steps\n## 6. Notes\n\nRules:\n1. Each numbered section uses bullet or ordered lists. Omit a section entirely when it has no content; never write none or not applicable.\n2. Key conclusions: 3 to 6 one-sentence items, max 30 words each, state the conclusion only.\n3. Detailed points: 2 to 5 groups, each with a ### heading naming the topic, 2 to 5 bullets per group.\n4. Numbers and definitions: only figures, versions, parameters, commands and terms that actually appear; omit the section if none.\n5. Next steps: concrete actions starting with a verb; omit if none.\n6. Use statements throughout; never write the user said, the assistant replied, I or you.\n7. Do not restate the transcript and avoid filler such as in summary, overall, hope this helps.\n8. Keep proper nouns, identifiers and version numbers exactly as written.\n9. Total length 300 to 700 words; prefer brevity over padding.',ovUserPrompt:'Below is the full conversation (%s messages). Output the overview document only, starting with the level-1 heading, with no preamble, explanation or closing line.\n\n',ovEditBtn:'Edit',ovPreview:'Preview',ovMenu:'Export overview',nativeMode:'Native mode',nativeModeDesc:'Send only your messages and memories, without this app\'s extra system prompt',nativeOnTip:'Native mode on, applies from the next message',nativeOffTip:'Enhanced mode restored',nativeRoleTip:'Native mode is on, roles are ignored',roleTitle:'Role',roleNew:'New role',roleEdit:'Edit role',roleNone:'No role',roleNoneDesc:'Answer in the default style',roleEmpty:'No roles yet. Create one with the persona and rules you want, then use it in any chat.',roleNameLabel:'Name',roleNamePh:'e.g. Java interviewer',rolePromptLabel:'Prompt',rolePromptPh:'You are a big-tech interviewer. Ask one question at a time…',roleTip:'This text is added to the system prompt on every request, so longer prompts cost more.',roleNote:'A role applies to this chat only and can be changed any time.',roleSaved:'Role saved',roleOn:'Role on: ',roleOff:'Role off',roleNeedName:'Give the role a name',roleNeedPrompt:'Prompt cannot be empty',roleDelAsk:'Delete this role? Chats using it fall back to default.',thinkNote:'The API offers low, high and max only, defaulting to high. Higher effort costs more. Applies to the next message.',thought:'Thought',
   searchNow:'Search: ',openNow:'Open: ',findNow:'Find: ',readNow:'Read: ',toolNow:'Web tools…',
   stopped:'(stopped)',netErr:'Network error, please retry',reqFail:'Request failed (',keyBad:'Invalid or expired API key',noBalance:'Insufficient balance',
   tooOften:'Too many requests, try again later',genFail:'Generation failed',
@@ -979,7 +1059,7 @@ function calcCost(model,u){
 }
 function fmtTok(v){v=v||0;return v>=10000?(v/1000).toFixed(1)+'k':String(v)}
 function fmtMoney(v){if(!v)return '¥0';return '¥'+(v<0.01?v.toFixed(4):v.toFixed(3))}
-const DEF={roles:[],ledger:null,settings:{apiKey:'',theme:'auto',think:false,thinkLevel:'high',search:false,model:'deepseek-flash',memoryOn:true,personalOn:true,autoMem:true,lang:'zh',fsMsg:13.5,fsCode:12.5,uiScale:1,codeFont:'system',perf:true,name:'',onboarded:false},convs:[],current:null,memories:[],personal:''};
+const DEF={roles:[],ledger:null,settings:{apiKey:'',theme:'auto',think:false,thinkLevel:'high',search:false,model:'deepseek-flash',memoryOn:true,personalOn:true,autoMem:true,native:false,lang:'zh',fsMsg:13.5,fsCode:12.5,uiScale:1,codeFont:'system',perf:true,name:'',onboarded:false},convs:[],current:null,memories:[],personal:''};
 let S=load();
 let streamAbort=null,streaming=false,pending=[],pendingFiles=[],selectMode=false,selected=new Set();
 function load(){
@@ -1624,7 +1704,7 @@ function delRole(role){
   for(const c of S.convs){if(c.roleId===role.id){delete c.roleId;delete c.roleName}}
   save(true);renderChips();renderTitle();renderRoleList();toast(t('deleted'));
 }
-$('#chipRole').onclick=openRoleSheet;
+$('#chipRole').onclick=()=>{if(S.settings.native){toast(t('nativeRoleTip'));return}openRoleSheet()};
 $('#roleNew').onclick=()=>openRoleEdit(null);
 $('#roleCancel').onclick=()=>{closeAll();openRoleSheet()};
 $('#roleSave').onclick=saveRole;
@@ -1658,6 +1738,310 @@ function exitIncognito(force){
   return true;
 }
 $('#btnIncog').onclick=enterIncognito;
+
+let ovConv=null,ovMd='',ovBusy=false,ovTimer=null,ovStat='';
+function ovName(c){
+  const base=((c&&c.title)||t('newTitle')).replace(/[\\/:*?"<>|]+/g,' ').trim().slice(0,40)||'pico';
+  return base+'-概览';
+}
+function ovTranscript(c){
+  const rows=[];
+  for(const m of c.msgs||[]){
+    if(m.role!=='user'&&m.role!=='assistant')continue;
+    const txt=(m.content||'').trim();
+    if(!txt)continue;
+    rows.push((m.role==='user'?'用户：':'助手：')+txt);
+  }
+  let all=rows.join('\n\n');
+  if(all.length>26000){
+    all=all.slice(0,15000)+'\n\n……（中间省略）……\n\n'+all.slice(-9000);
+  }
+  return all;
+}
+function ovSetStep(txt){const el=$('#ovStep');if(el)el.textContent=txt}
+function ovShowLoad(){
+  $('#ovLoad').style.display='flex';$('#ovDoc').classList.remove('on');
+  const ta=$('#ovEdit');if(ta){ta.classList.remove('on');ta.value=''}ovEditing=false;
+  const eb=$('#ovEditBtn');if(eb)eb.textContent=t('ovEditBtn');
+  $('#ovFormats').querySelectorAll('button').forEach(b=>b.disabled=true);
+  $('#ovHint').textContent=t('ovHintLoading');
+}
+function ovShowDoc(){
+  $('#ovLoad').style.display='none';$('#ovDoc').classList.add('on');
+  $('#ovFormats').querySelectorAll('button').forEach(b=>b.disabled=false);
+  $('#ovHint').textContent=t('ovHintReady');
+}
+async function ovGenerate(){
+  if(ovBusy||!ovConv)return;
+  ovBusy=true;ovMd='';
+  const c=ovConv;
+  const transcript=ovTranscript(c);
+  $('#ovTitle').textContent=ovName(c);
+  ovShowLoad();
+  ovSetEdit(false);
+  const t0=performance.now();
+  const chars=transcript.replace(/\s+/g,'').length;
+  const subBase=t('ovSub').replace('%s',chars);
+  $('#ovSub').textContent=subBase+' · 0.0s';
+  const steps=[t('ovStep1'),t('ovStep2'),t('ovStep3')];
+  let si=0;ovSetStep(steps[0]);
+  clearInterval(ovTimer);
+  ovTimer=setInterval(()=>{
+    si=(si+1)%steps.length;ovSetStep(steps[si]);
+    $('#ovSub').textContent=subBase+' · '+Math.max(1,Math.round((performance.now()-t0)/1000))+'s';
+  },900);
+  const sys=t('ovSysPrompt');
+  const ask=t('ovUserPrompt').replace('%s',((c.msgs||[]).length))+"\n\n"+transcript;
+  try{
+    const r=await fetch('https://api.deepseek.com/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.settings.apiKey},
+      body:JSON.stringify({model:'deepseek-flash',stream:false,max_tokens:4096,temperature:0.35,
+        messages:[{role:'system',content:sys},{role:'user',content:ask}]})
+    });
+    if(!r.ok){
+      let msg='';try{msg=(await r.json()).error?.message||''}catch(e){}
+      throw new Error(msg||('HTTP '+r.status));
+    }
+    const j=await r.json();
+    const out=(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||'').trim();
+    if(!out)throw new Error(t('ovEmpty'));
+    ovMd=out;
+    const secs=((performance.now()-t0)/1000);
+    const u=j.usage||{};
+    const cost=calcCost('deepseek-flash',u);
+    try{ledgerAdd({ts:Date.now(),usage:u,cost:cost,model:'deepseek-flash'});save(true)}catch(e){}
+    const tok=(u.total_tokens||((u.prompt_tokens||0)+(u.completion_tokens||0)))||0;
+    const hit=u.prompt_cache_hit_tokens||0;
+    ovStat=t('ovTook')+Math.max(1,Math.round(secs))+'s · '+fmtTok(tok)+' tokens'+(hit?('（'+t('ovCacheHit')+' '+fmtTok(hit)+'）'):'')+' · '+fmtMoney(cost);
+    renderOvDoc();
+    ovShowDoc();
+  }catch(e){
+    $('#ovLoad').style.display='none';$('#ovDoc').classList.add('on');
+    $('#ovDoc').innerHTML='<div style="color:#d33;font-size:13px;line-height:1.8">'+esc(e.message||String(e))+'</div>'
+      +'<div class="meta">'+t('ovTook')+Math.max(1,Math.round((performance.now()-t0)/1000))+'s</div>';
+    $('#ovHint').textContent=t('ovFailed');
+  }finally{
+    ovBusy=false;clearInterval(ovTimer);
+  }
+}
+function openOverview(c){
+  if(!c||!c.msgs||!c.msgs.length){toast(t('ovNoMsgs'));return}
+  if(!S.settings.apiKey){toast(t('needKey'));openSettings();return}
+  closeSheets();ovConv=c;ovMd='';ovStat='';ovEditing=false;
+  $('#ovTitle').textContent=ovName(c);
+  $('#ovDoc').innerHTML='';$('#ovEdit').value='';$('#ovEdit').classList.remove('on');
+  $('#ovSheet').classList.add('show');
+  ovGenerate();
+}
+function crc32Table(){
+  if(crc32Table.t)return crc32Table.t;
+  const t=new Uint32Array(256);
+  for(let i=0;i<256;i++){let c=i;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[i]=c>>>0}
+  crc32Table.t=t;return t;
+}
+function crc32(u8){
+  const t=crc32Table();let c=0xFFFFFFFF;
+  for(let i=0;i<u8.length;i++)c=t[(c^u8[i])&0xFF]^(c>>>8);
+  return (c^0xFFFFFFFF)>>>0;
+}
+function zipStore(files){
+  const enc=new TextEncoder();
+  const chunks=[],central=[];
+  let offset=0;
+  const dv=(n,size)=>{const b=new Uint8Array(size);const v=new DataView(b.buffer);v.setUint32(0,n,true);return b};
+  for(const f of files){
+    const name=enc.encode(f.name),data=typeof f.data==='string'?enc.encode(f.data):f.data;
+    const crc=crc32(data),n=data.length;
+    const lh=new Uint8Array(30);
+    const lv=new DataView(lh.buffer);
+    lv.setUint32(0,0x04034b50,true);lv.setUint16(4,20,true);lv.setUint16(6,0x0800,true);
+    lv.setUint16(8,0,true);lv.setUint16(10,0,true);lv.setUint16(12,0,true);
+    lv.setUint32(14,crc,true);lv.setUint32(18,n,true);lv.setUint32(22,n,true);
+    lv.setUint16(26,name.length,true);lv.setUint16(28,0,true);
+    chunks.push(lh,name,data);
+    const ch=new Uint8Array(46);
+    const cv=new DataView(ch.buffer);
+    cv.setUint32(0,0x02014b50,true);cv.setUint16(4,20,true);cv.setUint16(6,20,true);
+    cv.setUint16(8,0x0800,true);cv.setUint16(10,0,true);cv.setUint16(12,0,true);cv.setUint16(14,0,true);
+    cv.setUint32(16,crc,true);cv.setUint32(20,n,true);cv.setUint32(24,n,true);
+    cv.setUint16(28,name.length,true);cv.setUint16(30,0,true);cv.setUint16(32,0,true);
+    cv.setUint16(34,0,true);cv.setUint16(36,0,true);cv.setUint32(38,0,true);
+    cv.setUint32(42,offset,true);
+    central.push(ch,name,data?new Uint8Array(0):new Uint8Array(0));
+    offset+=30+name.length+n;
+  }
+  let cdSize=0;const cdParts=[];
+  for(let i=0;i<central.length;i+=3){
+    cdParts.push(central[i],central[i+1]);
+    cdSize+=46+central[i+1].length;
+  }
+  const eocd=new Uint8Array(22);const ev=new DataView(eocd.buffer);
+  ev.setUint32(0,0x06054b50,true);ev.setUint16(8,files.length,true);ev.setUint16(10,files.length,true);
+  ev.setUint32(12,cdSize,true);ev.setUint32(16,offset,true);
+  return new Blob([...chunks,...cdParts,eocd],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+}
+function xmlEsc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function mdRuns(line){
+  const parts=String(line).split(/(\*\*[^*]+\*\*)/);
+  return parts.filter(Boolean).map(p=>{
+    const b=/^\*\*([^*]+)\*\*$/.exec(p);
+    if(b)return '<w:r><w:rPr><w:b/></w:rPr><w:t xml:space="preserve">'+xmlEsc(b[1])+'</w:t></w:r>';
+    return '<w:r><w:t xml:space="preserve">'+xmlEsc(p)+'</w:t></w:r>';
+  }).join('');
+}
+function docxParagraph(text,opt){
+  const o=opt||{};
+  const pPr='<w:pPr>'+(o.style?'<w:pStyle w:val="'+o.style+'"/>':'')+
+    '<w:spacing w:before="'+(o.before||0)+'" w:after="'+(o.after||120)+'" w:line="360" w:lineRule="auto"/>'+
+    (o.indent?'<w:ind w:left="'+o.indent+'"/>':'')+'</w:pPr>';
+  return '<w:p>'+pPr+mdRuns(text)+'</w:p>';
+}
+function docxBody(markdown){
+  const lines=String(markdown).replace(/\r/g,'').split('\n');
+  const out=[];
+  for(const raw of lines){
+    const line=raw.trimEnd();
+    if(!line.trim()){out.push('<w:p><w:pPr><w:spacing w:after="0"/></w:pPr></w:p>');continue}
+    let m;
+    if(m=/^###\s+(.*)$/.exec(line)){out.push(docxParagraph(m[1],{style:'Heading3',before:160,after:80}));continue}
+    if(m=/^##\s+(.*)$/.exec(line)){out.push(docxParagraph(m[1],{style:'Heading2',before:240,after:100}));continue}
+    if(m=/^#\s+(.*)$/.exec(line)){out.push(docxParagraph(m[1],{style:'Heading1',before:0,after:200}));continue}
+    if(m=/^([-*])\s+(.*)$/.exec(line)){out.push(docxParagraph('• '+m[2],{indent:360}));continue}
+    if(m=/^(\d+[.)])\s+(.*)$/.exec(line)){out.push(docxParagraph(m[1]+' '+m[2],{indent:360}));continue}
+    if(/^>\s?/.test(line)){out.push(docxParagraph(line.replace(/^>\s?/,''),{indent:360}));continue}
+    out.push(docxParagraph(line,{}));
+  }
+  return out.join('');
+}
+function buildDocx(markdown,title){
+  const doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+  '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+
+  docxParagraph(title,{style:'Heading1',after:240})+
+  docxBody(markdown)+
+  '<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440"/></w:sectPr>'+
+  '</w:body></w:document>';
+  const styles='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+  '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'+
+  '<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Microsoft YaHei" w:eastAsia="Microsoft YaHei" w:hAnsi="Microsoft YaHei"/><w:sz w:val="24"/></w:rPr></w:rPrDefault></w:docDefaults>'+
+  '<w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/><w:basedOn w:val="Normal"/><w:pPr><w:outlineLvl w:val="0"/></w:pPr><w:rPr><w:b/><w:sz w:val="36"/></w:rPr></w:style>'+
+  '<w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/><w:basedOn w:val="Normal"/><w:pPr><w:outlineLvl w:val="1"/></w:pPr><w:rPr><w:b/><w:sz w:val="30"/></w:rPr></w:style>'+
+  '<w:style w:type="paragraph" w:styleId="Heading3"><w:name w:val="heading 3"/><w:basedOn w:val="Normal"/><w:pPr><w:outlineLvl w:val="2"/></w:pPr><w:rPr><w:b/><w:sz w:val="26"/></w:rPr></w:style>'+
+  '</w:styles>';
+  const ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+  '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
+  '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'+
+  '<Default Extension="xml" ContentType="application/xml"/>'+
+  '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>'+
+  '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>';
+  const rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+  '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+  '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+  const drels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+  '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+  '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+  return zipStore([
+    {name:'[Content_Types].xml',data:ct},
+    {name:'_rels/.rels',data:rels},
+    {name:'word/_rels/document.xml.rels',data:drels},
+    {name:'word/document.xml',data:doc},
+    {name:'word/styles.xml',data:styles}
+  ]);
+}
+
+function buildPaged(title,meta,html){
+  const box=document.createElement('div');
+  box.style.cssText='position:fixed;left:-9999px;top:0;width:180mm;visibility:hidden';
+  const probe=document.createElement('div');
+  probe.className='pdfpage';
+  probe.style.cssText='width:180mm;height:auto;padding:0;overflow:visible';
+  probe.innerHTML=html;
+  box.appendChild(probe);document.body.appendChild(box);
+  const MM=3.7795, contentH=Math.floor((297-16-18)*MM)-6;
+  const pages=[];let cur=[];let used=0;
+  const kids=[...probe.children];
+  const pushPage=()=>{if(cur.length){pages.push(cur);cur=[];used=0}};
+  const headH=(()=>{const t=document.createElement('div');t.innerHTML='<h1>'+esc(title)+'</h1><div class="meta">'+esc(meta)+'</div>';
+    t.style.cssText='width:100%';probe.appendChild(t);
+    const h=t.getBoundingClientRect().height+12;probe.removeChild(t);return h})();
+  for(const el of kids){
+    const h=el.getBoundingClientRect().height+parseFloat(getComputedStyle(el).marginTop||0)+parseFloat(getComputedStyle(el).marginBottom||0)+4;
+    if(used+h>contentH&&cur.length){pushPage()}
+    cur.push(el.outerHTML);used+=h;
+    if(used>contentH*0.98)pushPage();
+  }
+  pushPage();
+  document.body.removeChild(box);
+  const parts=pages.map(pg=>'<div class="pdfpage">'+pg.join('')+'</div>');
+  if(!parts.length)parts.push('<div class="pdfpage"><h1>'+esc(title)+'</h1></div>');
+  parts[0]=parts[0].replace('<div class="pdfpage">','<div class="pdfpage"><h1>'+esc(title)+'</h1><div class="meta">'+esc(meta)+'</div>');
+  return parts.join('');
+}
+
+function ovBody(){
+  return String(ovMd||'').replace(/^#\s+.*\n+/, '');
+}
+function ovExport(fmt){
+  if(!ovMd||!ovConv){toast(t('ovEmpty'));return}
+  const name=ovName(ovConv);
+  if(fmt==='md'){
+    saveAny(new Blob([ovMd],{type:'text/markdown;charset=utf-8'}),name+'.md');
+  }else if(fmt==='txt'){
+    saveAny(new Blob([plainText(ovMd)],{type:'text/plain;charset=utf-8'}),name+'.txt');
+  }else if(fmt==='docx'){
+    try{
+      const blob=buildDocx(ovBody(),name);
+      saveAny(blob,name+'.docx');
+    }catch(e){toast('DOCX 生成失败：'+(e.message||e));return}
+  }else if(fmt==='pdf'){
+    const root=document.createElement('div');root.id='printRoot';
+    try{
+      root.innerHTML=buildPaged(name, new Date().toLocaleString(), md(ovBody()).html);
+    }catch(e){toast('PDF 生成失败：'+(e.message||e));return}
+    document.body.appendChild(root);
+    const cleanup=()=>{try{root.remove()}catch(e){}};
+    if(nativeBridge()){
+      setTimeout(()=>{
+        try{
+          if(typeof AndroidSaver.printPageWithName==='function')AndroidSaver.printPageWithName(name);
+          else AndroidSaver.printPage();
+        }catch(e){try{AndroidSaver.printPage()}catch(e2){}}
+      },400);
+      setTimeout(cleanup,15000);return;
+    }
+    window.addEventListener('afterprint',cleanup,{once:true});
+    setTimeout(()=>{try{window.print()}catch(e){};setTimeout(cleanup,10000)},80);
+    return;
+  }
+  toast(t('exported'));
+}
+let ovEditing=false;
+function ovSetEdit(on){
+  const ta=$('#ovEdit');
+  if(on){
+    if(!ovMd){toast(t('ovEmpty'));return}
+    ta.value=ovMd;ta.classList.add('on');$('#ovDoc').classList.remove('on');
+    $('#ovEditBtn').textContent=t('ovPreview');
+    ta.focus();
+  }else{
+    ovMd=ta.value;
+    ta.classList.remove('on');$('#ovDoc').classList.add('on');
+    renderOvDoc();
+    $('#ovEditBtn').textContent=t('ovEditBtn');
+  }
+  ovEditing=on;
+}
+function renderOvDoc(){
+  const c=ovConv;
+  const meta='<div class="meta">'+esc(new Date().toLocaleString())+' · '+esc(((c&&c.msgs)||[]).length+t('ovMsgUnit'))+(ovStat?' · '+ovStat:'')+'</div>';
+  $('#ovDoc').innerHTML=meta+md(ovMd).html;
+  $('#ovDoc').querySelectorAll('pre').forEach(p=>{p.style.maxHeight='none';p.style.overflow='visible'});
+}
+$('#ovEditBtn').onclick=()=>{ if(ovBusy)return; ovSetEdit(!ovEditing); };
+$('#ovClose').onclick=()=>{ovBusy=false;clearInterval(ovTimer);ovSetEdit(false);$('#ovSheet').classList.remove('show')};
+$('#ovRedo').onclick=()=>{if(!ovBusy)ovGenerate()};
+$('#ovFormats').querySelectorAll('button').forEach(b=>{b.onclick=()=>{if(b.disabled)return;ovExport(b.dataset.f)}});
+
 function renderTitle(){
   const c=cur();
   if(INC){
@@ -1719,6 +2103,8 @@ function renderList(){
     box.appendChild(row);
     if(c._open){
       const menu=document.createElement('div');menu.className='cmenu';
+      const ov=document.createElement('button');ov.textContent=t('ovMenu');
+      ov.onclick=e=>{e.stopPropagation();c._open=false;renderList();openOverview(c)};
       const pin=document.createElement('button');pin.textContent=c.pinned?t('unpin'):t('pin');
       pin.onclick=e=>{e.stopPropagation();c.pinned=!c.pinned;c._open=false;save(true);renderList();toast(c.pinned?t('pin'):t('unpin'))};
       const lock=document.createElement('button');lock.textContent=c.locked?t('unlock'):t('lock');
@@ -1733,7 +2119,7 @@ function renderList(){
         if(S.current===c.id)S.current=S.convs[0]?S.convs[0].id:null;
         save(true);renderAll();updateSelbar();
       };
-      menu.appendChild(pin);menu.appendChild(lock);menu.appendChild(del);box.appendChild(menu);
+      menu.appendChild(ov);menu.appendChild(pin);menu.appendChild(lock);menu.appendChild(del);box.appendChild(menu);
     }
   }
   if(sorted.length>LIMIT){
@@ -2445,10 +2831,11 @@ function webRules(en){
 }
 async function buildMessages(c){
   const en=S.settings.lang==='en';
-  let sys=en
+  const NATIVE=!!S.settings.native;
+  let sys=NATIVE?'':(en
     ? 'You are DeepSeek, an AI assistant created by DeepSeek. Be accurate and concise, format with Markdown, label code blocks. The current time is '+nowText()+'. Use it when the user asks about date, weekday or time.\n\nFormatting rule: whenever a math or physics formula appears, write it in LaTeX. Inline math uses $...$, a standalone formula uses $$...$$ on its own line. Do not build formulas from Unicode superscripts, subscripts, √, ∫ or Σ characters. Chemical equations use \\ce{...}, units use \\pu{...}.'+webRules(en)
-    : '你是 DeepSeek，由深度求索（DeepSeek）创造的 AI 助手。回答准确、简洁，用 Markdown 排版，代码块标注语言。现在是'+nowText()+'。用户问日期、星期、时间时以此为准。\n\n排版规则：凡是数学、物理公式，一律用 LaTeX 书写。行内公式用 $...$，独立成行的公式用 $$...$$ 单独占一行。不要用 Unicode 上下标、√、∫、Σ 等符号拼公式。化学方程式用 \\ce{...}，单位用 \\pu{...}。'+webRules(en);
-  const rblock=roleBlock(c);
+    : '你是 DeepSeek，由深度求索（DeepSeek）创造的 AI 助手。回答准确、简洁，用 Markdown 排版，代码块标注语言。现在是'+nowText()+'。用户问日期、星期、时间时以此为准。\n\n排版规则：凡是数学、物理公式，一律用 LaTeX 书写。行内公式用 $...$，独立成行的公式用 $$...$$ 单独占一行。不要用 Unicode 上下标、√、∫、Σ 等符号拼公式。化学方程式用 \\ce{...}，单位用 \\pu{...}。'+webRules(en));
+  const rblock=NATIVE?'':roleBlock(c);
   if(rblock)sys+=rblock;
   if(S.settings.personalOn&&S.personal.trim()){
     sys+=en?('\n\n[User persona — takes precedence over the default style]\n'+S.personal.trim().slice(0,4000))
@@ -2459,7 +2846,8 @@ async function buildMessages(c){
     sys+=en?('\n\n[Long-term memory about the user]\n'+ms+'\nUse it naturally; do not recite it line by line.')
            :('\n\n【关于用户的长期记忆】\n'+ms+'\n回答时自然地利用这些记忆，不要逐条复述。');
   }
-  const out=[{role:'system',content:sys}];
+  const out=[];
+  if(sys)out.push({role:'system',content:sys});
   const hist=c.msgs.filter(m=>m.role==='user'|| (m.role==='assistant'&&(m.content||m.reasoning))).slice(-30);
   for(const m of hist){
     if(m.role==='user'){
@@ -2479,7 +2867,7 @@ async function buildMessages(c){
   const clean=sanitizeMsgs(out);
   let last=-1;
   for(let k=clean.length-1;k>=0;k--){if(clean[k].role==='user'){last=k;break}}
-  if(last>=0)clean.splice(last,0,latestReminder());
+  if(last>=0&&!NATIVE)clean.splice(last,0,latestReminder());
   return clean;
 }
 function sanitizeMsgs(list){
@@ -2911,7 +3299,7 @@ function renderInstallGuide(){
 }
 function openSettings(){
   $('#inKey').value=S.settings.apiKey;
-  updateStorage();$('#inName').value=S.settings.name||'';renderInstallGuide();$('#sheet').classList.add('show');$('#mask').classList.add('show')}
+  updateStorage();$('#inName').value=S.settings.name||'';renderInstallGuide();$('#nativeOn').checked=!!S.settings.native;$('#sheet').classList.add('show');$('#mask').classList.add('show')}
 function openModels(){
   const box=$('#modelList');box.innerHTML='';
   for(const m of MODELS){
@@ -3184,6 +3572,7 @@ $('#restoreFile').onchange=async e=>{
   save(true);renderAll();closeAll();
   toast(t('importDone')+added+t('importSkip')+(skipped+failed),3500);
 };
+$('#nativeOn').onchange=e=>{S.settings.native=e.target.checked;save(true);renderChips();toast(e.target.checked?t('nativeOnTip'):t('nativeOffTip'))};
 $('#btnCopyUrl').onclick=()=>{copyText(location.href);toast(t('openInBrowser'))};
 $('#chipModel').onclick=openModels;
 $('#modMemory').onclick=()=>{closeAll();openMemory()};
