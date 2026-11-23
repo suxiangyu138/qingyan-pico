@@ -83,6 +83,38 @@ def gz_key(path):
     st = os.stat(path)
     return 'gz:' + hashlib.sha1((path + ':' + str(st.st_size)).encode()).hexdigest()[:16]
 
+def is_legacy(offsets):
+    for k in offsets:
+        if k.startswith('ino:') and k.count(':') >= 2:
+            return True
+        if k.startswith('gz:') and not re.match(r'^gz:[0-9a-f]{8}:\d+$', k):
+            return True
+    return False
+
+def migrate_legacy(offsets, heads):
+    new = {}
+    for k, v in offsets.items():
+        path = (v or {}).get('path') or ''
+        if not path or not os.path.exists(path):
+            continue
+        if path.endswith('.gz'):
+            h = gz_head(path)
+            new[gz_key(path)] = {'path': path, 'done': True, 'head': h}
+            if h:
+                heads.add(h)
+        else:
+            try:
+                ino = os.stat(path).st_ino
+                size = os.path.getsize(path)
+            except OSError:
+                continue
+            off = min(int((v or {}).get('offset') or 0), size)
+            new['ino:' + str(ino)] = {'path': path, 'offset': off}
+            h = plain_head(path)
+            if h:
+                heads.add(h)
+    return new
+
 def handled(path, offsets, st, heads):
     try:
         size = os.path.getsize(path)
@@ -218,6 +250,9 @@ def main():
     totals = state.get('totals') or {"installs": 0, "versions": {}, "webOpens": 0, "pageViews": 0}
     daily = state.get('daily') or {}
     heads = set(state.get('heads') or [])
+    if is_legacy(offsets):
+        offsets = migrate_legacy(offsets, heads)
+        print('legacy state keys migrated', file=sys.stderr)
     st = {'totals': totals, 'daily': daily}
 
     if legacy and not (a.adopt and os.path.exists(a.adopt)):
