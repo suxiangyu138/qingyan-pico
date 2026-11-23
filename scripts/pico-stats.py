@@ -24,12 +24,24 @@ def day_of(line):
         return ''
     return f'{y}-{mon:02d}-{d}'
 
+def blank_totals():
+    return {"installs": 0, "versions": {}, "webOpens": 0, "pageViews": 0}
+
 def load(path):
     try:
         with open(path, encoding='utf-8') as f:
-            return json.load(f)
+            data = json.load(f)
     except Exception:
-        return {"files": {}, "totals": {"installs": 0, "versions": {}, "webOpens": 0, "pageViews": 0}, "updated": ""}
+        return {"files": {}, "totals": blank_totals(), "daily": {}, "updated": ""}
+    totals = data.get('totals') or {}
+    merged = blank_totals()
+    merged.update(totals)
+    if not isinstance(merged.get('versions'), dict):
+        merged['versions'] = {}
+    data['totals'] = merged
+    data['files'] = data.get('files') or {}
+    data['daily'] = data.get('daily') or {}
+    return data
 
 def save(path, data):
     d = os.path.dirname(path) or '.'
@@ -40,6 +52,16 @@ def save(path, data):
     os.replace(tmp, path)
 
 def gz_key(path):
+    try:
+        with open(path, 'rb') as f:
+            f.seek(-8, os.SEEK_END)
+            trailer = f.read(8)
+        if len(trailer) == 8:
+            crc = int.from_bytes(trailer[:4], 'little')
+            isize = int.from_bytes(trailer[4:], 'little')
+            return 'gz:%08x:%d' % (crc, isize)
+    except Exception:
+        pass
     st = os.stat(path)
     return 'gz:' + hashlib.sha1((path + ':' + str(st.st_size)).encode()).hexdigest()[:16]
 
@@ -161,12 +183,27 @@ def main():
 
     fresh = not os.path.exists(a.state)
     state = load(a.state)
+    totals_now = state.get('totals') or blank_totals()
+    has_offsets = bool(state.get('files'))
+    legacy = (not fresh) and has_offsets is False and (totals_now.get('installs', 0) > 0 or totals_now.get('webOpens', 0) > 0)
+    need_adopt = fresh or legacy or (totals_now.get('installs', 0) == 0 and totals_now.get('webOpens', 0) == 0)
     offsets = state.get('files') or {}
     totals = state.get('totals') or {"installs": 0, "versions": {}, "webOpens": 0, "pageViews": 0}
     daily = state.get('daily') or {}
     st = {'totals': totals, 'daily': daily}
 
-    if fresh and a.adopt and os.path.exists(a.adopt):
+    if legacy and not (a.adopt and os.path.exists(a.adopt)):
+        for path in sorted(glob.glob(a.log)):
+            if path.endswith('.gz'):
+                offsets[gz_key(path)] = {'path': path, 'done': True}
+            else:
+                try:
+                    ino = os.stat(path).st_ino
+                    offsets['ino:' + str(ino)] = {'path': path, 'offset': os.path.getsize(path)}
+                except OSError:
+                    pass
+        print('legacy state detected: logs marked as processed, totals kept', file=sys.stderr)
+    elif need_adopt and a.adopt and os.path.exists(a.adopt):
         try:
             with open(a.adopt, encoding='utf-8') as f:
                 old = json.load(f)
