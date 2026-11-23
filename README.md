@@ -13,7 +13,7 @@
 
 **源码**：[Gitee](https://gitee.com/suxiangyu138/qingyan-pico) · [GitHub](https://github.com/suxiangyu138/qingyan-pico)
 
-![version](https://img.shields.io/badge/version-1.2.0-black) ![license](https://img.shields.io/badge/license-MIT-black) ![platform](https://img.shields.io/badge/platform-Android%208.0%2B%20%7C%20iOS%20%7C%20HarmonyOS-black)
+![version](https://img.shields.io/badge/version-2.2.0-black) ![license](https://img.shields.io/badge/license-MIT-black) ![platform](https://img.shields.io/badge/platform-Android%208.0%2B%20%7C%20iOS%20%7C%20HarmonyOS-black)
 
 ---
 
@@ -356,7 +356,7 @@ Nginx 要做四件事：
 
 ## 十三、版本与发布
 
-当前 v1.2.0，versionCode 78。
+当前 v2.2.0，versionCode 79。
 
 - 下载页：[suxiangyu.top/download](https://suxiangyu.top/download/)
 - Gitee Release：[releases](https://gitee.com/suxiangyu138/qingyan-pico/releases)
@@ -369,7 +369,7 @@ APK 命名约定 `Pico-X.Y.Z.apk`，站点上另存一份 `app-X.Y.Z.apk` 供下
 - `versionName` 只在正式发版时变，一次发版一个号，不为单个修复单独加号
 - 平时改代码只递增 `versionCode`，本地构建安装包自用，不发布、不部署
 - 攒够一批改动再统一发版并部署线上
-- 当前发行版本：1.2.0；versionCode 78
+- 当前发行版本：2.2.0；versionCode 79
 
 ---
 

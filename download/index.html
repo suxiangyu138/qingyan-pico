@@ -73,12 +73,12 @@ footer a{color:var(--fg);text-decoration:none;border-bottom:1px solid var(--line
 <div class="bg"><i></i><i></i></div>
 <div class="wrap">
 
-  <span class="badge" id="badge"><span class="dot"></span>v1.2.0 · 开源 · 长期可用</span>
+  <span class="badge" id="badge"><span class="dot"></span>v2.2.0 · 开源 · 长期可用</span>
 
   <div class="hero">
     <div>
       <div class="brand">
-        <img class="icon" src="icon.png?v=1.2.0" alt="轻言 Pico" onerror="this.style.display='none'">
+        <img class="icon" src="icon.png?v=2.2.0" alt="轻言 Pico" onerror="this.style.display='none'">
         <h1>轻言 <span style="font-weight:600;font-size:.55em;color:var(--muted);letter-spacing:0">Pico</span></h1>
       </div>
       <p class="sub">2 MB 的 DeepSeek 轻客户端。自带 API Key，数据只存本机，绕开 C 端每日额度与 4 万字输入限制，上下文 1M。安卓装 APK，iPhone、鸿蒙与电脑用网页版，历史对话可以直接导入。</p>
@@ -94,13 +94,13 @@ footer a{color:var(--fg);text-decoration:none;border-bottom:1px solid var(--line
 
     <div class="panel">
       <h2>版本信息</h2>
-      <div class="row"><span>版本</span><b id="pVer">1.2.0</b></div>
+      <div class="row"><span>版本</span><b id="pVer">2.2.0</b></div>
       <div class="row"><span>大小</span><b id="pSize">约 2 MB</b></div>
       <div class="row"><span>系统</span><b id="pReq">Android 8.0+</b></div>
       <div class="row"><span>更新</span><b id="pDate">2026-11-19</b></div>
       <div class="row" style="border-bottom:0;padding-bottom:4px"><span>SHA-256</span><b>校验</b></div>
       <div class="sha">
-        <code id="sha">ee23aae7…5907963d</code>
+        <code id="sha">a9094b87…9eb30c4f</code>
         <button class="copy" id="copySha">复制</button>
       </div>
     </div>
@@ -183,7 +183,7 @@ document.getElementById('copyApp').addEventListener('click',function(){
   if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(u).then(ok).catch(fb)}else fb();
   function fb(){var a=document.createElement('textarea');a.value=u;a.style.position='fixed';a.style.opacity=0;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){}a.remove()}
 });
-var FULL_SHA='ee23aae720aa492d30d2880f5c45c7a12ed2bb203d6a82671e878c145907963d';
+var FULL_SHA='a9094b8705192069c6b2b54f6c62e477a884bd1e7c1e5a04cb4dde139eb30c4f';
 function shortSha(s){return s.slice(0,8)+'…'+s.slice(-8)}
 document.getElementById('sha').textContent=shortSha(FULL_SHA);
 document.getElementById('copySha').addEventListener('click',function(){
