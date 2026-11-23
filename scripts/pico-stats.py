@@ -104,10 +104,41 @@ def main():
     ap.add_argument('--log', default='/var/log/nginx/access*.log')
     ap.add_argument('--state', default='/var/lib/pico-stats.state.json')
     ap.add_argument('--out', default='/var/www/html/download/stats.json')
+    ap.add_argument('--adopt', default='', help='沿用已有的 stats.json 数值，并把当前日志标记为已处理，只统计之后的新请求')
     a = ap.parse_args()
+    fresh = not os.path.exists(a.state)
     state = load(a.state)
     offsets = state.get('files') or {}
     totals = state.get('totals') or {"installs": 0, "versions": {}, "webOpens": 0, "pageViews": 0}
+    if fresh and a.adopt and os.path.exists(a.adopt):
+        try:
+            with open(a.adopt, encoding='utf-8') as f:
+                old = json.load(f)
+            totals = {
+                'installs': int(old.get('installs') or 0),
+                'versions': old.get('versions') or {},
+                'webOpens': int(old.get('webOpens') or 0),
+                'pageViews': int(old.get('pageViews') or 0),
+            }
+            st = {'totals': totals}
+            for path in sorted(glob.glob(a.log)):
+                if path.endswith('.gz'):
+                    offsets[gz_key(path)] = {'path': path, 'done': True}
+                else:
+                    try:
+                        ino = os.stat(path).st_ino
+                        offsets['ino:' + str(ino)] = {'path': path, 'offset': os.path.getsize(path)}
+                    except OSError:
+                        pass
+            out = {'installs': totals['installs'], 'versions': totals['versions'],
+                   'webOpens': totals['webOpens'], 'pageViews': totals['pageViews'],
+                   'updated': __import__('datetime').datetime.now().astimezone().isoformat(timespec='seconds')}
+            save(a.out, out)
+            save(a.state, {'files': offsets, 'totals': totals, 'updated': out['updated']})
+            print(json.dumps(out, ensure_ascii=False))
+            return
+        except Exception as e:
+            print('adopt failed: %s' % e, file=sys.stderr)
     st = {'totals': totals}
     for path in sorted(glob.glob(a.log)):
         try:
