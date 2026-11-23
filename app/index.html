@@ -836,7 +836,6 @@ a.tile{text-decoration:none}
   <div class="about-row"><b>GitHub</b><a href="https://github.com/suxiangyu138" target="_blank" rel="noopener">suxiangyu138</a></div>
   <div class="about-row"><b>Gitee</b><a href="https://gitee.com/suxiangyu138" target="_blank" rel="noopener">suxiangyu138</a></div>
   <div class="about-row"><b data-i18n="version">版本</b><span id="aboutVer">v2.1.23</span></div>
-  <div class="about-note" id="webStat" style="display:none;opacity:.45"></div>
   <button class="mini" id="btnForceUpdate" style="width:100%;margin-top:10px" data-i18n="forceUpdate">刷新到最新版</button>
   <div class="about-note" id="bootInfo" style="font-size:10px;opacity:.7"></div>
   <div class="about-note" data-i18n="aboutNote">个人开发版本，与 DeepSeek 官方无关，仅供社区自用参考。有问题或建议，发邮件到 suxiangyu_dev@foxmail.com，或在仓库提 issue。</div>
@@ -1659,20 +1658,6 @@ function exitIncognito(force){
   return true;
 }
 $('#btnIncog').onclick=enterIncognito;
-function loadWebStat(){
-  const el=$('#webStat');if(!el)return;
-  const url='https://suxiangyu.top/download/stats.json?ts='+Date.now();
-  const done=txt=>{
-    try{
-      const j=JSON.parse(txt||'{}');
-      if(typeof j.webOpens==='number'&&j.webOpens>0){el.style.display='block';el.textContent='w '+j.webOpens;}
-    }catch(e){}
-  };
-  try{
-    if(nativeBridge()){done(AndroidSaver.fetchText(url));return}
-  }catch(e){}
-  fetch(url,{cache:'no-cache'}).then(r=>r.ok?r.text():'').then(done).catch(()=>{});
-}
 function renderTitle(){
   const c=cur();
   if(INC){
@@ -2968,7 +2953,6 @@ $('#expMd').onclick=exportMarkdown;
 $('#expTxt').onclick=exportText;
 $('#expPdf').onclick=exportPdf;
 $('#btnAbout').onclick=()=>{closeAll();
-  loadWebStat();
   $('#btnForceUpdate').textContent='检查更新';$('#aboutVer').textContent='v'+APP_VER;$('#bootInfo').textContent=(window.__bootMs?('启动 '+window.__bootMs+' ms'):'')+(IS_IOS?' · 建议添加到主屏幕，长期不用可能被系统清缓存':'');$('#aboutSheet').classList.add('show');$('#mask').classList.add('show')};
 function cmpVer(a,b){
   const pa=String(a).replace(/^v/,'').split('.').map(Number),pb=String(b).replace(/^v/,'').split('.').map(Number);

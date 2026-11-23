@@ -12,6 +12,17 @@ LINE = re.compile(r'"(?P<method>[A-Z]+) (?P<path>[^ ]+) HTTP/[^"]*" (?P<status>\
 UA = re.compile(r'"([^"]*)"\s*$')
 BOT = re.compile(r'bot|crawl|spider|slurp|scan|python-requests|curl|wget|go-http|java/|okhttp|headless', re.I)
 APK = re.compile(r'^/download/(?:app-latest|app-(\d+\.\d+\.\d+))\.apk$')
+WHEN = re.compile(r'\[(\d{2})/([A-Za-z]{3})/(\d{4}):')
+MONTHS = {m: i + 1 for i, m in enumerate(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'])}
+
+def day_of(line):
+    m = WHEN.search(line)
+    if not m:
+        return ''
+    d, mon, y = m.group(1), MONTHS.get(m.group(2).title(), 0), m.group(3)
+    if not mon:
+        return ''
+    return f'{y}-{mon:02d}-{d}'
 
 def load(path):
     try:
@@ -84,14 +95,24 @@ def handled(path, offsets, st):
                 continue
             p = m.group('path').split('?', 1)[0]
             t = st['totals']
+            day = day_of(line)
+            bucket = None
+            if day:
+                bucket = st['daily'].setdefault(day, {'installs': 0, 'webOpens': 0, 'pageViews': 0})
             if p in ('/app/', '/app/index.html'):
                 t['webOpens'] += 1
+                if bucket is not None:
+                    bucket['webOpens'] += 1
             elif p in ('/download/', '/download/index.html'):
                 t['pageViews'] += 1
+                if bucket is not None:
+                    bucket['pageViews'] += 1
             else:
                 am = APK.match(p)
                 if am:
                     t['installs'] += 1
+                    if bucket is not None:
+                        bucket['installs'] += 1
                     ver = am.group(1) or 'latest'
                     t['versions'][ver] = t['versions'].get(ver, 0) + 1
     if ino is None:
@@ -99,28 +120,62 @@ def handled(path, offsets, st):
     else:
         offsets[k] = {'path': path, 'offset': start}
 
+def report_text(out, daily, days=10):
+    from datetime import datetime
+    t = out
+    lines = []
+    lines.append('轻言 Pico 站点统计')
+    lines.append('更新时间  ' + str(t.get('updated', '')).replace('T', ' ')[:16])
+    lines.append('')
+    lines.append('总计')
+    lines.append('  安装包下载   ' + str(t['installs']))
+    lines.append('  网页版打开   ' + str(t['webOpens']))
+    lines.append('  下载页访问   ' + str(t['pageViews']))
+    lines.append('')
+    keys = sorted(daily.keys(), reverse=True)[:days]
+    if keys:
+        lines.append('最近 %d 天' % len(keys))
+        lines.append('  日期          下载   网页   下载页')
+        for k in keys:
+            b = daily[k]
+            lines.append('  %s  %5d  %5d  %6d' % (k, b.get('installs', 0), b.get('webOpens', 0), b.get('pageViews', 0)))
+        lines.append('')
+    vers = t.get('versions') or {}
+    if vers:
+        lines.append('按版本下载')
+        for v, n in sorted(vers.items(), key=lambda x: -x[1]):
+            lines.append('  %-10s %5d' % (v, n))
+        lines.append('')
+    lines.append('口径：只统计请求次数，不记录 IP、UA 与 Cookie；爬虫与 4xx 已剔除。')
+    return '\n'.join(lines) + '\n'
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--log', default='/var/log/nginx/access*.log')
     ap.add_argument('--state', default='/var/lib/pico-stats.state.json')
-    ap.add_argument('--out', default='/var/www/html/download/stats.json')
-    ap.add_argument('--adopt', default='', help='沿用已有的 stats.json 数值，并把当前日志标记为已处理，只统计之后的新请求')
+    ap.add_argument('--out', default='', help='可选的公开 stats.json；留空则不写公开文件')
+    ap.add_argument('--report-token', default='', help='生成私有报告 <dir>/pico-<token>.txt 与 .json')
+    ap.add_argument('--report-dir', default='/var/www/html', help='报告输出目录')
+    ap.add_argument('--adopt', default='', help='沿用已有 stats.json 数值，并把当前日志标记为已处理')
     a = ap.parse_args()
+
     fresh = not os.path.exists(a.state)
     state = load(a.state)
     offsets = state.get('files') or {}
     totals = state.get('totals') or {"installs": 0, "versions": {}, "webOpens": 0, "pageViews": 0}
+    daily = state.get('daily') or {}
+    st = {'totals': totals, 'daily': daily}
+
     if fresh and a.adopt and os.path.exists(a.adopt):
         try:
             with open(a.adopt, encoding='utf-8') as f:
                 old = json.load(f)
-            totals = {
+            totals.update({
                 'installs': int(old.get('installs') or 0),
                 'versions': old.get('versions') or {},
                 'webOpens': int(old.get('webOpens') or 0),
                 'pageViews': int(old.get('pageViews') or 0),
-            }
-            st = {'totals': totals}
+            })
             for path in sorted(glob.glob(a.log)):
                 if path.endswith('.gz'):
                     offsets[gz_key(path)] = {'path': path, 'done': True}
@@ -130,21 +185,15 @@ def main():
                         offsets['ino:' + str(ino)] = {'path': path, 'offset': os.path.getsize(path)}
                     except OSError:
                         pass
-            out = {'installs': totals['installs'], 'versions': totals['versions'],
-                   'webOpens': totals['webOpens'], 'pageViews': totals['pageViews'],
-                   'updated': __import__('datetime').datetime.now().astimezone().isoformat(timespec='seconds')}
-            save(a.out, out)
-            save(a.state, {'files': offsets, 'totals': totals, 'updated': out['updated']})
-            print(json.dumps(out, ensure_ascii=False))
-            return
         except Exception as e:
             print('adopt failed: %s' % e, file=sys.stderr)
-    st = {'totals': totals}
-    for path in sorted(glob.glob(a.log)):
-        try:
-            handled(path, offsets, st)
-        except Exception as e:
-            print(f'skip {path}: {e}', file=sys.stderr)
+    else:
+        for path in sorted(glob.glob(a.log)):
+            try:
+                handled(path, offsets, st)
+            except Exception as e:
+                print('skip %s: %s' % (path, e), file=sys.stderr)
+
     out = {
         'installs': totals['installs'],
         'versions': totals['versions'],
@@ -152,8 +201,16 @@ def main():
         'pageViews': totals['pageViews'],
         'updated': __import__('datetime').datetime.now().astimezone().isoformat(timespec='seconds'),
     }
-    save(a.out, out)
-    save(a.state, {'files': offsets, 'totals': totals, 'updated': out['updated']})
+    if a.out:
+        save(a.out, out)
+    save(a.state, {'files': offsets, 'totals': totals, 'daily': daily, 'updated': out['updated']})
+    if a.report_token:
+        base = os.path.join(a.report_dir, 'pico-' + a.report_token)
+        save(base + '.json', dict(out, daily=daily))
+        os.makedirs(a.report_dir, exist_ok=True)
+        with open(base + '.txt', 'w', encoding='utf-8') as f:
+            f.write(report_text(out, daily))
+        print('report: %s.txt' % base)
     print(json.dumps(out, ensure_ascii=False))
 
 if __name__ == '__main__':
