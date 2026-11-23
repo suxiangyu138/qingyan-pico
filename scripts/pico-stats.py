@@ -41,6 +41,7 @@ def load(path):
     data['totals'] = merged
     data['files'] = data.get('files') or {}
     data['daily'] = data.get('daily') or {}
+    data['heads'] = data.get('heads') or []
     return data
 
 def save(path, data):
@@ -50,6 +51,23 @@ def save(path, data):
     with os.fdopen(fd, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     os.replace(tmp, path)
+
+def head_crc(data):
+    return '%08x' % (__import__('zlib').crc32(data[:8192]) & 0xffffffff)
+
+def plain_head(path):
+    try:
+        with open(path, 'rb') as f:
+            return head_crc(f.read(8192))
+    except Exception:
+        return ''
+
+def gz_head(path):
+    try:
+        with gzip.open(path, 'rb') as f:
+            return head_crc(f.read(8192))
+    except Exception:
+        return ''
 
 def gz_key(path):
     try:
@@ -65,7 +83,7 @@ def gz_key(path):
     st = os.stat(path)
     return 'gz:' + hashlib.sha1((path + ':' + str(st.st_size)).encode()).hexdigest()[:16]
 
-def handled(path, offsets, st):
+def handled(path, offsets, st, heads):
     try:
         size = os.path.getsize(path)
     except OSError:
@@ -73,6 +91,10 @@ def handled(path, offsets, st):
     if path.endswith('.gz'):
         k = gz_key(path)
         if k in offsets:
+            return
+        h = gz_head(path)
+        if h and h in heads:
+            offsets[k] = {'path': path, 'done': True, 'head': h}
             return
         f = gzip.open(path, 'rb')
         k_done = k
@@ -83,6 +105,10 @@ def handled(path, offsets, st):
         k = 'ino:' + str(ino)
         f = open(path, 'rb')
         rec = offsets.get(k) or {}
+        if not rec and path:
+            h0 = plain_head(path)
+            if h0:
+                heads.add(h0)
         start = rec.get('offset', 0)
         if size and start > size:
             start = 0
@@ -138,7 +164,8 @@ def handled(path, offsets, st):
                     ver = am.group(1) or 'latest'
                     t['versions'][ver] = t['versions'].get(ver, 0) + 1
     if ino is None:
-        offsets[k] = {'path': path, 'done': True}
+        offsets[k] = {'path': path, 'done': True, 'head': gz_head(path)}
+        heads.add(gz_head(path))
     else:
         offsets[k] = {'path': path, 'offset': start}
 
@@ -190,6 +217,7 @@ def main():
     offsets = state.get('files') or {}
     totals = state.get('totals') or {"installs": 0, "versions": {}, "webOpens": 0, "pageViews": 0}
     daily = state.get('daily') or {}
+    heads = set(state.get('heads') or [])
     st = {'totals': totals, 'daily': daily}
 
     if legacy and not (a.adopt and os.path.exists(a.adopt)):
@@ -227,7 +255,7 @@ def main():
     else:
         for path in sorted(glob.glob(a.log)):
             try:
-                handled(path, offsets, st)
+                handled(path, offsets, st, heads)
             except Exception as e:
                 print('skip %s: %s' % (path, e), file=sys.stderr)
 
@@ -240,7 +268,7 @@ def main():
     }
     if a.out:
         save(a.out, out)
-    save(a.state, {'files': offsets, 'totals': totals, 'daily': daily, 'updated': out['updated']})
+    save(a.state, {'files': offsets, 'totals': totals, 'daily': daily, 'heads': sorted(heads)[-2000:], 'updated': out['updated']})
     if a.report_token:
         base = os.path.join(a.report_dir, 'pico-' + a.report_token)
         save(base + '.json', dict(out, daily=daily))
