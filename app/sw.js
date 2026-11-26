@@ -1,5 +1,5 @@
 // 缓存按版本号隔离：每次发版换一个缓存名，激活时清掉旧的
-const VERSION = '2.2.0';
+const VERSION = '2.2.1';
 const CACHE = 'pico-' + VERSION;
 const ASSETS = [
   './',

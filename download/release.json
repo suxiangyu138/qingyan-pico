@@ -1,10 +1,10 @@
 {
-  "version": "2.2.0",
-  "versionCode": 79,
-  "url": "app-2.2.0.apk",
-  "apkUrl": "https://suxiangyu.top/download/app-2.2.0.apk",
+  "version": "2.2.1",
+  "versionCode": 81,
+  "url": "app-2.2.1.apk",
+  "apkUrl": "https://suxiangyu.top/download/app-2.2.1.apk",
   "size": "约 2 MB",
   "requires": "Android 8.0 及以上",
-  "updated": "2026-11-23",
-  "notes": "项目文件夹与共享记忆；对话概览导出 Markdown/TXT/Word/PDF；一键原生；渲染优化"
+  "updated": "2026-11-26",
+  "notes": "链接蓝色高亮并交给系统浏览器；返回键不再直接退出应用"
 }
